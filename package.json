@@ -1,14 +1,12 @@
 {
   "name": "test-reusable-template",
   "version": "1.0.0",
-  "description": "Dummy package for testing reusable workflow",
-  "main": "index.js",
+  "description": "Dummy for CI test",
   "scripts": {
-    "build": "echo 'Build complete!' && mkdir -p dist && echo 'Built file' > dist/output.txt",
-    "test": "echo 'All tests passed!'"
+    "build": "echo 'Build done!' && mkdir -p dist && echo 'output' > dist/index.html",
+    "test": "echo 'Tests OK!'"
   },
   "devDependencies": {
     "@types/node": "^20.0.0"
-  },
-  "keywords": ["test", "ci"]
+  }
 }
