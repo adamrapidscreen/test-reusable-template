@@ -1,0 +1,9 @@
+{
+  "name": "test-reusable-template",
+  "version": "1.0.0",
+  "description": "Dummy for CI test",
+  "scripts": {
+    "build": "echo 'Build successful!' && mkdir -p dist && echo 'output' > dist/index.html",
+    "test": "echo 'Tests passed!'"
+  }
+}
