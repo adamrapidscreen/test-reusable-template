@@ -1,11 +1,61 @@
-name: Test Reusable Template
+name: Reusable Template with Caching
 
 on:
-  workflow_dispatch:  # Allows manual trigger via GitHub UI
+  workflow_call:
+    inputs:
+      cache-dependency-path:
+        description: 'Path to dependency lockfile for caching'
+        required: false
+        type: string
+        default: ''
+      cache-build-path:
+        description: 'Path to build outputs directory for caching'
+        required: false
+        type: string
+        default: ''
+      node-version:
+        description: 'Node.js version'
+        required: false
+        type: string
+        default: '20'
 
 jobs:
-  call-template:
-    uses: adamrapidscreen/ReusableAppTemplate/.github/workflows/main.yml@main  # Points to your template
-    with:
-      cache-dependency-path: '**/package-lock.json'  # Customize as needed
-      node-version: '20'
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'  # Auto-caches node_modules if lockfile present
+
+      # Manual caching example (use if auto-cache doesn't fit; conditional to skip if no path)
+      - name: Cache dependencies
+        if: inputs.cache-dependency-path != ''
+        uses: actions/cache@v4
+        with:
+          path: node_modules  # Or your dep dir (e.g., vendor/ for PHP)
+          key: ${{ runner.os }}-deps-${{ hashFiles(inputs.cache-dependency-path) }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Install dependencies
+        run: npm ci  # Or pip install -r requirements.txt, etc.
+
+      - name: Cache build outputs
+        if: inputs.cache-build-path != ''
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.cache-build-path }}
+          key: ${{ runner.os }}-build-${{ github.sha }}  # SHA for per-commit uniqueness
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Build
+        run: npm run build  # Or your build command
+
+      - name: Test
+        run: npm test
