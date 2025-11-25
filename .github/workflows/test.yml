@@ -1,0 +1,11 @@
+name: Test Reusable Template
+
+on:
+  workflow_dispatch:  # Allows manual trigger via GitHub UI
+
+jobs:
+  call-template:
+    uses: adamrapidscreen/ReusableAppTemplate/.github/workflows/main.yml@main  # Points to your template
+    with:
+      cache-dependency-path: '**/package-lock.json'  # Customize as needed
+      node-version: '20'
